@@ -1,0 +1,49 @@
+{
+  "name": "codex-devcontainer",
+
+  // 汎用イメージ（Python / Node.js / その他を含む）
+  // プロジェクトの技術スタックに合わせて変更してください
+  // 例（Python 専用）: "mcr.microsoft.com/devcontainers/python:3.12-bookworm"
+  // 例（Node.js 専用）: "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm"
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+
+  "features": {
+    // GitHub CLI（gh コマンド）: SDD フローで必須
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+
+    // --- 以下はプロジェクトの技術スタックに応じて追加 ---
+
+    // AWS CLI（AWS プロジェクトの場合）
+    // "ghcr.io/devcontainers/features/aws-cli:1": {},
+
+    // Docker-in-Docker（コンテナビルドが必要な場合）
+    // "ghcr.io/devcontainers/features/docker-in-docker:3.0.1": {}
+  },
+
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+
+  "mounts": [
+    // Codex CLI の個人設定・認証情報を引き継ぐ
+    "source=${localEnv:HOME}/.codex,target=/home/vscode/.codex,type=bind,consistency=cached"
+
+    // --- 以下はプロジェクトの要件に応じて追加 ---
+
+    // AWS 認証情報（AWS プロジェクトの場合）
+    // "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+  ],
+
+  "containerEnv": {
+    // プロジェクト固有の環境変数をここに追加
+    // 例: "AWS_PROFILE": "your-profile"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // プロジェクトの技術スタックに応じて追加
+        // 例（Python）: "ms-python.python", "ms-python.vscode-pylance"
+        // 例（TypeScript）: "dbaeumer.vscode-eslint", "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}
