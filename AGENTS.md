@@ -1,4 +1,4 @@
-# [プロダクト名] - 開発ガイド
+# Coord Prompt Studio - 開発ガイド
 
 <!-- このファイルは Codex CLI がプロジェクト文脈を理解するための設定ファイルです。
      セクション1（開発プロセス原則）はハーネス共通のルールです。編集しないでください。
@@ -84,36 +84,30 @@
 
 ## プロダクト定義
 
-<!-- このセクションをプロジェクト情報で書き換えてください -->
-
 ### プロダクト名
 
-<!-- 例: MyApp - ユーザー向けタスク管理サービス -->
-[プロダクト名とサブタイトルを記入]
+Coord Prompt Studio - コーデ画像から画像生成プロンプトを組み立てるローカルツール
 
 ### ビジョン
 
-<!-- 例: エンジニアが CLI から離れずにタスクを管理できるツールを提供する -->
-[このプロダクトが目指す世界観を 1〜3 文で記入]
+画像生成における「服装の再現」「人物設定の固定」「不要要素の抑制」を、プロンプト部品の組み合わせとして扱えるようにする。MVP 0〜2ではCodex CLIまたはCodex SDKを使ったローカルツールとして実装し、最終画像生成のみChatGPT Web UIへ持ち出す。
 
 ### 目的
 
-<!-- 例:
-- タスク管理の手間を最小化し、開発本来の作業に集中できるようにする
-- チームの進捗を可視化し、コミュニケーションコストを削減する
--->
-[プロダクトが解決する課題と提供する価値を箇条書きで記入]
+- 実写画像、アニメ風イラスト画像、既存のコーデ再現プロンプトからコーデ抽出プロンプトを作成する
+- 人物固定、コーデ抽出、背景、撮影、ポーズ、ネガティブ抑制の各プロンプト部品を管理する
+- プロンプト部品を合成し、ChatGPT Web UIへ貼り付けやすい最終プロンプトを作成する
+- MVP 0では、コーデ画像からChatGPT同等のコーデ抽出結果が得られるかを検証する
+- 生成結果の良かった/悪かった、失敗再生成、派生生成を記録し、次回のプロンプト改善につなげる
+- 初期MVPでは画像生成APIを直接呼び出さず、APIコストを抑えて抽出・合成・評価のワークフローを検証する
 
 ### ターゲットユーザー
 
-<!-- 例: フルスタックエンジニア、個人開発者、5〜10名の小規模チーム -->
-[主なユーザー層を記入]
+画像生成を使ってキャラクター画像、ファッション画像、SNS向けビジュアル、創作素材を作る個人クリエイター。複数パターンの衣装案やスタイリング案を効率よく試したいデザイナー、企画者、プロンプト作成者も対象とする。
 
 ### 参照ドキュメント
 
 > このセクションは `docs/` 配下のドキュメント一覧です。詳細はそれぞれのファイルを参照してください。
-
-<!-- 採用したドキュメントのみ残し、不要な行は削除してください -->
 
 - `docs/product-requirements.md` — プロダクト要求定義書（PRD）
 - `docs/functional-design.md` — 機能設計書・設計指針
@@ -126,110 +120,142 @@
 
 ## 技術スタック
 
-<!-- このセクションをプロジェクトの技術情報で書き換えてください -->
-
 ### 使用技術
 
-<!-- 例:
-- 言語: Python 3.12
-- パッケージマネージャー: uv
+- 実行基盤: Codex CLI / Codex SDK
+- 言語: Python 3.12+
+- 仮想環境: `.venv`
+- 依存管理: uv + `pyproject.toml` + `uv.lock`
+- CLI: Typer または argparse
+- Codex連携: `codex` CLI subprocess / `openai-codex` Python SDK
+- データストア: JSON/YAML files、必要に応じてSQLite
 - テスト: pytest
-- 型チェック: basedpyright
-- リンター: ruff
--->
-[言語・フレームワーク・主要ライブラリ・ツールを記入]
+- リンター/整形: ruff
+- 型チェック: basedpyright または pyright
 
 ### バージョン管理
 
-<!-- プロジェクトで使用するバージョン固定ファイルを記入してください -->
-<!-- 例: .python-version（Python バージョン固定）、.nvmrc（Node.js バージョン固定）、.tool-versions（asdf 用） -->
-
-バージョン固定ファイル: [使用するファイルを記入（例: `.python-version`）]
+バージョン固定ファイル: `.python-version`, `uv.lock`
 
 ### セットアップ手順
 
 #### macOS
 
 ```bash
-# 例: Python のインストール（pyenv を使用）
-# brew install pyenv
-# pyenv install 3.12
-# pyenv local 3.12
+brew install uv
+uv python install 3.12
+uv venv .venv
+uv sync
 ```
-
-<!-- macOS 向けのセットアップ手順を記入 -->
 
 #### Windows
 
-<!-- Windows 向けのセットアップ手順を記入 -->
-<!-- PowerShell や winget を使った手順を記載 -->
+```powershell
+winget install --id astral-sh.uv
+uv python install 3.12
+uv venv .venv
+uv sync
+```
 
 #### Linux
 
-<!-- Linux 向けのセットアップ手順を記入 -->
-<!-- apt / yum / dnf 等を使った手順を記載 -->
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv python install 3.12
+uv venv .venv
+uv sync
+```
 
 ### 依存関係のインストール
 
 ```bash
-# 例（プロジェクトのパッケージマネージャーに応じて変更）
-# uv sync      # Python (uv)
-# npm install  # Node.js
+uv sync
 ```
-
-<!-- 依存関係のインストールコマンドを記入 -->
 
 ### 主要コマンド
 
 ```bash
-# 例（プロジェクトに応じて変更）
-# uv run pytest           # テスト実行
-# uv run ruff check .     # リント
-# uv run basedpyright     # 型チェック
+uv run python -m coord_prompt_studio.cli --help
+uv run pytest
+uv run pytest --cov=src --cov-report=term-missing
+uv run ruff check .
+uv run ruff format .
+uv run basedpyright
 ```
-
-<!-- ビルド・テスト・リント・型チェック等の主要コマンドを記入 -->
 
 ---
 
 ## リポジトリ構造
 
-<!-- このセクションをプロジェクトの構造で書き換えてください -->
-
 ### ディレクトリ構造
 
-<!-- プロジェクトのディレクトリ構造をツリー形式で記入してください -->
-<!-- 例（Python プロジェクトの場合）:
-project-root/
-├── AGENTS.md              # Codex CLI へのコンテキスト注入（このファイル）
-├── .devcontainer/         # 開発環境定義
-├── .steering/
-│   ├── _template/         # 作業スペックのテンプレート
-│   └── YYYYMMDD-xxx/      # 作業単位のスペック（機能実装ごとに作成）
-├── docs/                  # 永続ドキュメント群
-├── src/
-│   └── myapp/             # アプリケーションコード
-├── tests/                 # テストコード
-├── .python-version        # Python バージョン固定
-└── README.md
--->
-
 ```
-[プロジェクトのディレクトリ構造を記入]
+platform-harness-for-codex/
+├── AGENTS.md
+├── README.md
+├── ONBOARDING.md
+├── .steering/
+│   ├── _template/
+│   │   ├── requirements.md
+│   │   ├── design.md
+│   │   └── tasklist.md
+│   └── YYYYMMDD-xxx/
+├── docs/
+│   ├── product-requirements.md
+│   ├── functional-design.md
+│   ├── architecture.md
+│   ├── repository-structure.md
+│   ├── development-guidelines.md
+│   └── glossary.md
+├── prompts/
+│   ├── coordinate_extraction.md
+│   ├── person_identity_improvement.md
+│   ├── negative_prompt_improvement.md
+│   └── final_prompt_template.md
+├── src/
+│   └── coord_prompt_studio/
+│       ├── __init__.py
+│       ├── cli.py
+│       ├── domain/
+│       ├── use_cases/
+│       ├── adapters/
+│       └── repositories/
+├── data/
+│   ├── images/
+│   ├── prompt_parts/
+│   ├── sessions/
+│   └── feedback/
+├── templates/
+│   └── layouts/
+├── tests/
+│   ├── domain/
+│   ├── use_cases/
+│   └── adapters/
+├── .venv/
+├── .python-version
+├── pyproject.toml
+└── uv.lock
 ```
 
 ### 主要ディレクトリの役割
 
-<!-- 各ディレクトリの役割を記入してください -->
-
 | ディレクトリ / ファイル | 役割 |
 |----------------------|------|
 | `AGENTS.md` | Codex CLI へのコンテキスト注入（開発プロセス・プロダクト定義・技術スタック・構造） |
-| `.devcontainer/` | 開発環境定義（Codex CLI インストール済み） |
 | `.steering/` | 作業単位のスペックファイル群（意思決定の履歴として Git 管理） |
 | `docs/` | プロジェクト全体の永続ドキュメント（PRD・設計書・ガイドライン等） |
-| <!-- 例: `src/` --> | <!-- 例: アプリケーションのメインコード --> |
-| <!-- 例: `tests/` --> | <!-- 例: テストコード --> |
+| `prompts/` | Codexへ渡すプロンプトテンプレート、ChatGPT Web UI貼り付け用テンプレート |
+| `src/coord_prompt_studio/` | Pythonローカルツール本体 |
+| `src/coord_prompt_studio/domain/` | プロンプト部品、評価、試行履歴、合成ルールなどのドメインモデル |
+| `src/coord_prompt_studio/use_cases/` | CLIから呼ばれるアプリケーション操作 |
+| `src/coord_prompt_studio/adapters/` | Codex CLI/SDK、画像保存など外部境界の実装 |
+| `src/coord_prompt_studio/repositories/` | JSON/YAML/SQLiteなど永続化境界の実装 |
+| `data/` | ローカル実行時の画像、抽出結果、プロンプト部品、評価履歴の保存先 |
+| `templates/layouts/` | Post-MVPの雑誌風コラージュ、コーデ説明画像用のレイアウトテンプレート |
+| `tests/` | pytestによるテストコード |
+| `.venv/` | ローカルPython仮想環境。Git管理しない |
+| `pyproject.toml` | Pythonプロジェクト設定、依存関係、ツール設定 |
+| `uv.lock` | uvによる依存関係ロックファイル |
 
 ### ファイル配置の判断基準
 
@@ -239,6 +265,10 @@ project-root/
 - **今回の作業専用のスペック** → `.steering/YYYYMMDD-xxx/` に配置
 - **プロジェクト全体の永続的な定義** → `docs/` に配置
 - **アイデア・ブレインストーミング** → `docs/ideas/` に配置
+- **Codex/ChatGPT向けプロンプトテンプレート** → `prompts/` に配置
+- **アプリケーションコード** → `src/coord_prompt_studio/` に配置
+- **テストコード** → `tests/` に配置
+- **ローカル実行データ** → `data/` に配置
 
 ---
 
