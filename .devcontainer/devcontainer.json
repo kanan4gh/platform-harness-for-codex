@@ -5,8 +5,7 @@
   // プロジェクトの技術スタックに合わせて変更してください
   // 例（Python 専用）: "mcr.microsoft.com/devcontainers/python:3.12-bookworm"
   // 例（Node.js 専用）: "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm"
-  // "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
 
   "features": {
     // GitHub CLI（gh コマンド）: SDD フローで必須
