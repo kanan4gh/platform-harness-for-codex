@@ -1,3 +1,73 @@
+# Coord Prompt Studio
+
+Coord Prompt Studio は、コーディネート画像から画像生成向けの服装再現プロンプトを抽出し、ChatGPT Web UIで得た抽出結果と比較評価するローカルCLIツールです。
+
+MVP 0では画像生成APIを呼び出しません。コーデ抽出、ChatGPT結果の貼り付け保存、比較評価の記録、セッション参照に集中します。
+
+## セットアップ
+
+```bash
+uv python install 3.12
+uv venv .venv
+uv sync
+```
+
+## CLI
+
+ヘルプを表示します。
+
+```bash
+uv run python -m coord_prompt_studio.cli --help
+```
+
+コーディネート画像から抽出セッションを作成します。
+
+```bash
+uv run python -m coord_prompt_studio.cli extract ./path/to/outfit.png --input-type photo --note "検証用"
+```
+
+イラスト画像の場合は `--input-type illustration` を指定します。
+
+```bash
+uv run python -m coord_prompt_studio.cli extract ./path/to/outfit.png --input-type illustration
+```
+
+ChatGPT Web UIで得た抽出結果を保存済みセッションへ追加します。
+
+```bash
+uv run python -m coord_prompt_studio.cli add-chatgpt 20260612-083000 --file ./chatgpt-result.txt
+```
+
+比較評価を記録します。
+
+```bash
+uv run python -m coord_prompt_studio.cli evaluate 20260612-083000 \
+  --coverage 同等 \
+  --colors-patterns 不足 \
+  --materials 要改善 \
+  --silhouette 同等 \
+  --prompt-usability 同等 \
+  --note "素材感の表現が少し弱い"
+```
+
+保存済みセッションを確認します。
+
+```bash
+uv run python -m coord_prompt_studio.cli list
+uv run python -m coord_prompt_studio.cli show 20260612-083000
+```
+
+## 開発コマンド
+
+```bash
+uv run pytest
+uv run ruff check .
+uv run ruff format --check .
+uv run basedpyright
+```
+
+---
+
 # Codex ハーネステンプレート
 
 OpenAI Codex CLI 向けのスペック駆動開発（SDD）ハーネスです。このテンプレートを複製することで、Codex エージェントがプロジェクトの方針・技術スタック・構造を理解した状態で開発を支援できる環境を即座に構築できます。

@@ -1,0 +1,14 @@
+.venv/
+.uv-cache/
+.uv-python/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.basedpyright/
+.coverage
+htmlcov/
+data/images/
+data/prompt_parts/
+data/sessions/
+data/feedback/

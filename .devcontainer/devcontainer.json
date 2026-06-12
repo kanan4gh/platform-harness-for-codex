@@ -1,15 +1,19 @@
 {
   "name": "codex-devcontainer",
 
-  // 汎用イメージ（Python / Node.js / その他を含む）
-  // プロジェクトの技術スタックに合わせて変更してください
-  // 例（Python 専用）: "mcr.microsoft.com/devcontainers/python:3.12-bookworm"
-  // 例（Node.js 専用）: "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm"
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  // platform-harness-engineering の devcontainer に揃えたベース構成
+  // vscode ユーザー（/home/vscode）、arm64 / amd64 両対応
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
 
   "features": {
+    // Claude Code CLI
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+
+    // Node.js（Codex CLI のインストールに必要）
+    "ghcr.io/devcontainers/features/node:2.0.0": {},
+
     // GitHub CLI（gh コマンド）: SDD フローで必須
-    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
 
     // --- 以下はプロジェクトの技術スタックに応じて追加 ---
 
@@ -24,7 +28,13 @@
 
   "mounts": [
     // Codex CLI の個人設定・認証情報を引き継ぐ
-    "source=${localEnv:HOME}/.codex,target=/home/vscode/.codex,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.codex,target=/home/vscode/.codex,type=bind,consistency=cached",
+
+    // Claude Code 設定・認証情報を引き継ぐ
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+
+    // GitHub CLI 認証情報を引き継ぐ
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
 
     // --- 以下はプロジェクトの要件に応じて追加 ---
 
@@ -40,10 +50,16 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        // プロジェクトの技術スタックに応じて追加
-        // 例（Python）: "ms-python.python", "ms-python.vscode-pylance"
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "tamasfe.even-better-toml"
         // 例（TypeScript）: "dbaeumer.vscode-eslint", "esbenp.prettier-vscode"
-      ]
+      ],
+
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.terminal.activateEnvironment": true
+      }
     }
   }
 }

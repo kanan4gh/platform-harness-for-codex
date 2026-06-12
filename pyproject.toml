@@ -1,0 +1,43 @@
+[project]
+name = "coord-prompt-studio"
+version = "0.1.0"
+description = "Local CLI tool for extracting coordinate prompts from outfit images."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pillow>=10.4.0",
+    "typer>=0.12.5",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.21.0",
+    "pytest>=8.3.3",
+    "ruff>=0.6.9",
+]
+
+[project.scripts]
+coord-prompt-studio = "coord_prompt_studio.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.basedpyright]
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"
